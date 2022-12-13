@@ -1,6 +1,9 @@
 package jm.task.core.jdbc.util;
 
+import com.mysql.fabric.jdbc.FabricMySQLDriver;
+
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -12,6 +15,9 @@ public class Util {
 
     public Util() {
         try {
+            Driver driver = new FabricMySQLDriver();
+            DriverManager.registerDriver(driver);
+
             connection = DriverManager.getConnection(HOST, USERNAME, PASSWORD);
         } catch (SQLException e) {
             throw new RuntimeException(e);
