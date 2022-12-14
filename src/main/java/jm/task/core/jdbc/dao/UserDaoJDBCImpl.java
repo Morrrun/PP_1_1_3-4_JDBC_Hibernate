@@ -13,29 +13,38 @@ import java.util.List;
 public class UserDaoJDBCImpl implements UserDao {
     private final Util CON = new Util();
 
-    private final String INSERT_INTO_PREPARED = "INSERT INTO users (name, lastname, age) VALUES(?, ?, ?)";
-    private final String GET_DATA = "SELECT * FROM users";
-    private final String DELETE_USER_BY_ID = "DELETE FROM users WHERE id = ?";
+    private final String nameTable = "users";
+    private final String DROP_TABLE = "DROP TABLE ";
+    private final String CREATE_TABLE = "CREATE TABLE " + nameTable + "" +
+            "(" +
+            "    id       INT auto_increment PRIMARY KEY," +
+            "    name     VARCHAR(100) NOT NULL," +
+            "    lastname VARCHAR(100) NOT NULL," +
+            "    age      INT          NOT NULL" +
+            ")" +
+            "    collate = utf8_general_ci";
+
+    private final String INSERT_INTO_PREPARED = "INSERT INTO " + nameTable + " (name, lastname, age) VALUES(?, ?, ?)";
+    private final String GET_DATA = "SELECT * FROM " + nameTable + "";
+    private final String DELETE_USER_BY_ID = "DELETE FROM " + nameTable + " WHERE id = ?";
+    private final String CLEAN_TABLE = "DELETE FROM " + nameTable + "";
 
     public UserDaoJDBCImpl() {
 
     }
 
     public void createUsersTable() {
-        try (Statement statement = CON.getConnection().createStatement()) {
+        try (Statement statement = CON.getConnection().createStatement();
+             PreparedStatement preparedStatement = CON.getConnection()
+                     .prepareStatement(CREATE_TABLE)) {
+
             ResultSet res = statement.executeQuery("SHOW TABLES");
 
             if (res.next() && res.getString(1).equals("users")) {
                 System.out.println("Таблица уже существует!");
             } else {
-                statement.executeUpdate("CREATE TABLE users" +
-                        "(" +
-                        "    id       INT auto_increment PRIMARY KEY," +
-                        "    name     VARCHAR(100) NOT NULL," +
-                        "    lastname VARCHAR(100) NOT NULL," +
-                        "    age      INT          NOT NULL" +
-                        ")" +
-                        "    collate = utf8_general_ci");
+                preparedStatement.executeUpdate();
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -43,11 +52,13 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try (Statement statement = CON.getConnection().createStatement()) {
+        try (Statement statement = CON.getConnection().createStatement();
+             PreparedStatement preparedStatement = CON.getConnection().prepareStatement(DROP_TABLE + nameTable)) {
+
             ResultSet res = statement.executeQuery("SHOW TABLES");
 
             if (res.next() && res.getString(1).equals("users")) {
-                statement.executeUpdate("DROP TABLE users");
+                preparedStatement.executeUpdate();
             } else {
                 System.out.println("Таблица не существует!");
             }
@@ -98,8 +109,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        try (Statement statement = CON.getConnection().createStatement()) {
-            statement.executeUpdate("DELETE FROM users");
+        try (PreparedStatement preparedStatement = CON.getConnection()
+                .prepareStatement(CLEAN_TABLE)) {
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
