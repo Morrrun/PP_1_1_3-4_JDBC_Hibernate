@@ -33,7 +33,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
-    public void createUsersTable() {
+    public void createUsersTable() throws SQLException {
         try (Statement statement = CON.getConnection().createStatement();
              PreparedStatement preparedStatement = CON.getConnection()
                      .prepareStatement(CREATE_TABLE)) {
@@ -51,7 +51,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-    public void dropUsersTable() {
+    public void dropUsersTable() throws SQLException {
         try (Statement statement = CON.getConnection().createStatement();
              PreparedStatement preparedStatement = CON.getConnection().prepareStatement(DROP_TABLE + nameTable)) {
 
@@ -67,7 +67,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) {
+    public void saveUser(String name, String lastName, byte age) throws SQLException {
         try (PreparedStatement preparedStatement = CON.getConnection().prepareStatement(INSERT_INTO_PREPARED)) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
@@ -80,7 +80,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws SQLException {
         try (PreparedStatement preparedStatement = CON.getConnection().prepareStatement(DELETE_USER_BY_ID)) {
             preparedStatement.setInt(1, (int) id);
 
@@ -90,7 +90,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws SQLException {
         List<User> userArrayList = new ArrayList<>();
         try (PreparedStatement preparedStatement = CON.getConnection().prepareStatement(GET_DATA)) {
             ResultSet res = preparedStatement.executeQuery();
@@ -108,7 +108,7 @@ public class UserDaoJDBCImpl implements UserDao {
         return userArrayList;
     }
 
-    public void cleanUsersTable() {
+    public void cleanUsersTable()  {
         try (PreparedStatement preparedStatement = CON.getConnection()
                 .prepareStatement(CLEAN_TABLE)) {
             preparedStatement.executeUpdate();

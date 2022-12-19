@@ -7,6 +7,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+
 public class Util {
     private final String HOST = "jdbc:mysql://localhost:3306/dbtest";
     private final String USERNAME = "root";
